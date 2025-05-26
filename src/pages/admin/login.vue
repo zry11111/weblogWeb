@@ -76,7 +76,9 @@ import { login } from "@/api/admin/user";
 import { ref, reactive,onMounted,onBeforeUnmount} from "vue";
 import router from "@/router";
 import { showMessage } from "@/composables/utils";
-import { setToken } from "@/composables/auth";
+import { setToken } from "@/composables/cookie";
+import { useUserStore } from "@/stores/user"
+const userStore = useUserStore()
 const form = reactive({
   username: "",
   password: "",
@@ -108,6 +110,8 @@ const onSubmit = () => {
         showMessage("登录成功");
         // 设置 token
         setToken(res.data.token)
+        // 设置用户信息，在 方法中调用获取用户信息的接口
+        userStore.setUserInfo()
         router.push("/admin/index");
       }else{
         showMessage(res.message,"error")

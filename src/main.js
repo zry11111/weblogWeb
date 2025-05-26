@@ -7,8 +7,7 @@ import App from '@/App.vue'
 import router from '@/router'
 import '@/permisson'
 import 'nprogress/nprogress.css'
-import { createPinia } from 'pinia'
-const pinia = createPinia()
+import pinia from '@/stores'
 const app = createApp(App)
 //引入图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

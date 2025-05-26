@@ -1,5 +1,5 @@
 import axios from "axios"
-import {getToken} from "@/composables/auth"
+import {getToken} from "@/composables/cookie"
 import { showMessage } from "@/composables/utils";
 const instance = axios.create({
     baseURL: "/api",

@@ -1,6 +1,6 @@
 import router from '@/router/index.js'
 import { showMessage,showPageLoading,hidePageLoading } from '@/composables/utils'
-import { getToken } from '@/composables/auth'
+import { getToken } from '@/composables/cookie'
 router.beforeEach((to, from, next) => {
     showPageLoading()
     // 如果路由需要登录,
