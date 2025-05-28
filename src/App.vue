@@ -1,8 +1,13 @@
 <script setup>
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+const locale = zhCn
 </script>
 
 <template>
-  <RouterView />
+  <!-- 将全局的样式语言设置为中文 -->
+  <el-config-provider :locale="locale">
+    <RouterView />
+  </el-config-provider>
 </template>
 
 <style scoped>
