@@ -21,12 +21,14 @@
             range-separator="至"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
+            :shortcuts="shortcuts"
             size="default"
+            @change="datepickerChange"
           />
         </div>
 
-        <el-button type="primary" class="ml-3" icon="Search">查询</el-button>
-        <el-button class="ml-3" icon="RefreshRight">重置</el-button>
+        <el-button type="primary" class="ml-3" icon="Search" @click="getTableData">查询</el-button>
+        <el-button class="ml-3" icon="RefreshRight" @click="reset">重置</el-button>
       </div>
     </el-card>
     <el-card shadow="never">
@@ -46,6 +48,7 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作">
           <template #default="scope">
+            <!-- #default插槽用来设置获取当前行的数据，比如下面绑定某个函数需要使用到样式中的数据时就使用该参数-->
             <el-button type="danger" size="small">
               <el-icon class="mr-1">
                 <Delete />
@@ -60,11 +63,13 @@
         <el-pagination
           v-model:current-page="current"
           v-model:page-size="size"
-          :page-sizes="[10, 20, 50]"
+          :page-sizes="[5, 10, 15]"
           :small="false"
           :background="true"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
+          @size-change="handleSizeChange"
+          @current-change="getTableData"
         />
       </div>
     </el-card>
@@ -73,35 +78,81 @@
 <script setup>
 // 引入所需图标
 // import { Search, RefreshRight } from "@element-plus/icons-vue";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
+import moment from "moment";
+import { getCategoryPageList} from '@/api/admin/category'
 
+const startDate = reactive({});
+const endDate = reactive({});
 // 分页查询的分类名称
 const searchCategoryName = ref("");
 // 日期
 const pickDate = ref("");
 // 模拟数据
-const tableData = [
+const tableData = ref([])
+const shortcuts = [
   {
-    createTime: "2016-05-03 12:00:00",
-    name: "Java",
+    text: "最近一周",
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+      return [start, end];
+    },
   },
   {
-    createTime: "2016-05-03 12:00:00",
-    name: "Minio",
+    text: "最近一个月",
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+      return [start, end];
+    },
   },
   {
-    createTime: "2016-05-03 12:00:00",
-    name: "Java",
-  },
-  {
-    createTime: "2016-05-03 12:00:00",
-    name: "Minio",
+    text: "最近三个月",
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+      return [start, end];
+    },
   },
 ];
+const datepickerChange = (e) => {
+  startDate.value = moment(e[0]).format("YYYY-MM-DD");
+  endDate.value = moment(e[1]).format("YYYY-MM-DD");
+  console.log("开始时间：" + startDate.value + ", 结束时间：" + endDate.value);
+};
 // 当前页码，给了一个默认值 1
 const current = ref(1);
 // 总数据量，给了个默认值 0
 const total = ref(0);
 // 每页显示的数据量，给了个默认值 10
-const size = ref(10);
+const size = ref(5);
+
+function getTableData(){
+    getCategoryPageList({current: current.value, size: size.value, startDate: startDate.value, endDate: endDate.value, name: searchCategoryName.value})
+    .then((res)=>{
+        if(res.success == true){
+            tableData.value = res.data
+            current.value = res.current
+            size.value = res.size
+            total.value = res.total
+        }
+    })
+}
+// 页面大小更改
+const handleSizeChange = (chooseSize) =>{
+    size.value = chooseSize;
+    getTableData();
+}
+// 重置查询条件
+const reset = () => {
+    searchCategoryName.value = ''
+    pickDate.value = ''
+    startDate.value = null
+    endDate.value = null
+}
+getTableData()
 </script>
