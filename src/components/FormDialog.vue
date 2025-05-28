@@ -35,6 +35,7 @@ const props = defineProps({
   destroyOnClose: {
     type: Boolean,
     default: false,
+    //设置为false，在关闭后不会销毁表单，因此输入的内容还会存在
   },
   confirmText: {
     type: String,

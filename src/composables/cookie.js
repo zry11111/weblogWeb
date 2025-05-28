@@ -19,7 +19,7 @@ export function setToken(token) {
 
 // 删除 Token
 export function removeToken() {
-    return cookie.remove(TOKEN_KEY,{ path: "/" })
+    return cookie.remove(TOKEN_KEY)
 }
 
 // ============================== 标签页 ==============================

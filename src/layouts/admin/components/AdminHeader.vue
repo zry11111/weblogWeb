@@ -75,8 +75,7 @@
     </div>
   </div>
   <!-- 修改密码 -->
-  <!-- 修改密码 -->
-  <el-dialog
+  <!-- <el-dialog
     v-model="dialogVisible"
     title="修改密码"
     width="40%"
@@ -86,7 +85,6 @@
   >
     <el-form ref="formRef" :rules="rules" :model="form">
       <el-form-item label="用户名" prop="username" label-width="120px">
-        <!-- 输入框组件 -->
         <el-input
           size="large"
           v-model="form.username"
@@ -122,7 +120,46 @@
         <el-button type="primary" @click="onSubmit"> 提交 </el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog> -->
+  <!-- 这里把修改密码的表单对话框组件也修改一下 -->
+  <FormDialog
+    ref="formDialogRef"
+    title="修改密码"
+    destroyOnClose
+    @submit="onSubmit"
+  >
+    <el-form ref="formRef" :rules="rules" :model="form">
+      <el-form-item label="用户名" prop="username" label-width="120px">
+        <el-input
+          size="large"
+          v-model="form.username"
+          placeholder="请输入用户名"
+          clearable
+          disabled
+        />
+      </el-form-item>
+      <el-form-item label="密码" prop="password" label-width="120px">
+        <el-input
+          size="large"
+          type="password"
+          v-model="form.password"
+          placeholder="请输入密码"
+          clearable
+          show-password
+        />
+      </el-form-item>
+      <el-form-item label="确认密码" prop="rePassword" label-width="120px">
+        <el-input
+          size="large"
+          type="password"
+          v-model="form.rePassword"
+          placeholder="请确认密码"
+          clearable
+          show-password
+        />
+      </el-form-item>
+    </el-form>
+  </FormDialog>
 </template>
 <script setup>
 import { useMenuStore } from "@/stores/menu";
@@ -130,13 +167,16 @@ import { useFullscreen } from "@vueuse/core";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import { showModel, showMessage } from "@/composables/utils";
-import { ref, reactive,watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import { updateAdminPassword } from "@/api/admin/user";
+import FormDialog from "@/components/FormDialog.vue";
+import { Dial } from "flowbite";
 const router = useRouter();
 const { isFullscreen, toggle } = useFullscreen();
 const userStore = useUserStore();
-// 对话框可见性
-const dialogVisible = ref(false);
+// 对话框
+const formDialogRef = ref(null);
+
 // 引入了菜单 store
 const menuStore = useMenuStore();
 // 表单引用
@@ -172,6 +212,7 @@ const rules = {
     },
   ],
 };
+
 // icon 点击事件
 const handleMenuWidth = () => {
   console.log("点击了菜单收缩按钮");
@@ -184,7 +225,7 @@ const handleRefresh = () => location.reload();
 const handleCommand = (command) => {
   // 更新密码
   if (command == "updatePassword") {
-    dialogVisible.value = true;
+    formDialogRef.value.open();
     // 省略...
   } else if (command == "logout") {
     // 退出登录
@@ -202,6 +243,7 @@ function logout() {
   });
 }
 const onSubmit = () => {
+  // formDialogRef.value.close()
   // 先验证 form 表单字段
   formRef.value.validate((valid) => {
     if (!valid) {
@@ -223,8 +265,8 @@ const onSubmit = () => {
         // 退出登录
         userStore.logout();
 
-        // 隐藏对话框
-        dialogVisible.value = false;
+        // 关闭表单
+        formDialogRef.value.close();
 
         // 跳转登录页
         router.push("/login");
@@ -238,7 +280,10 @@ const onSubmit = () => {
   });
 };
 // 监听 Pinia store 中值的变化,将用户名同步到表单中
-watch(() => userStore.userInfo.username, (newValue, oldValue) => {
-      form.username = newValue
-});
+watch(
+  () => userStore.userInfo.username,
+  (newValue, oldValue) => {
+    form.username = newValue;
+  }
+);
 </script>
