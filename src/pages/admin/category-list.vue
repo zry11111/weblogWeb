@@ -51,7 +51,13 @@
       </div>
 
       <!-- 分页列表 -->
-      <el-table :data="tableData" border stripe style="width: 100%">
+      <el-table
+        :data="tableData"
+        border
+        stripe
+        style="width: 100%"
+        v-loading="tableLoading"
+      >
         <el-table-column prop="name" label="分类名称" width="180" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作">
@@ -149,8 +155,9 @@ import {
   getCategoryPageList,
   addCategory,
   deleteCategory,
-} from "@/api/admin/category"; 
+} from "@/api/admin/category";
 
+const tableLoading = ref(false);
 // 对话框是否显示 修改为使用子组件中暴露的方法进行控制，如下formDialogRef.value.open();
 const formDialogRef = ref(null);
 
@@ -208,23 +215,27 @@ const onSubmit = () => {
       console.log("表单验证不通过");
       return false;
     }
-
-    addCategory(form).then((res) => {
-      if (res.success == true) {
-        showMessage("添加成功");
-        // 将表单中分类名称置空
-        form.name = "";
-        // 隐藏对话框
-        formDialogRef.value.close();
-        // 重新请求分页接口，渲染数据
-        getTableData();
-      } else {
-        // 获取服务端返回的错误消息
-        let message = res.message;
-        // 提示错误消息
-        showMessage(message, "error");
-      }
-    });
+    formDialogRef.value.showBtnLoading();
+    addCategory(form)
+      .then((res) => {
+        if (res.success == true) {
+          showMessage("添加成功");
+          // 将表单中分类名称置空
+          form.name = "";
+          // 隐藏对话框
+          formDialogRef.value.close();
+          // 重新请求分页接口，渲染数据
+          getTableData();
+        } else {
+          // 获取服务端返回的错误消息
+          let message = res.message;
+          // 提示错误消息
+          showMessage(message, "error");
+        }
+      })
+      .finally(() => {
+        formDialogRef.value.closeBtnLoading();
+      });
   });
 };
 const startDate = reactive({});
@@ -277,20 +288,27 @@ const total = ref(0);
 const size = ref(5);
 
 function getTableData() {
+  //显示表格加载
+  tableLoading.value = true;
+
   getCategoryPageList({
     current: current.value,
     size: size.value,
     startDate: startDate.value,
     endDate: endDate.value,
     name: searchCategoryName.value,
-  }).then((res) => {
-    if (res.success == true) {
-      tableData.value = res.data;
-      current.value = res.current;
-      size.value = res.size;
-      total.value = res.total;
-    }
-  });
+  })
+    .then((res) => {
+      if (res.success == true) {
+        tableData.value = res.data;
+        current.value = res.current;
+        size.value = res.size;
+        total.value = res.total;
+      }
+    })
+    .finally(() => {
+      tableLoading.value = false;
+    });
 }
 // 页面大小更改
 const handleSizeChange = (chooseSize) => {

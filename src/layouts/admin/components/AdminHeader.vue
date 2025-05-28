@@ -125,6 +125,7 @@
   <FormDialog
     ref="formDialogRef"
     title="修改密码"
+    confirmText="确认"
     destroyOnClose
     @submit="onSubmit"
   >
@@ -250,7 +251,7 @@ const onSubmit = () => {
       console.log("表单验证不通过");
       return false;
     }
-
+    formDialogRef.value.showBtnLoading();
     if (form.password != form.rePassword) {
       showMessage("两次密码输入不一致，请检查！", "warning");
       return;
@@ -276,6 +277,8 @@ const onSubmit = () => {
         // 提示消息
         showMessage(message, "error");
       }
+    }).finally(() => {
+      formDialogRef.value.closeBtnLoading();
     });
   });
 };
