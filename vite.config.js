@@ -12,7 +12,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    // host: '0.0.0.0', // 允许通过 IP 和 localhost 访问
+    host: '0.0.0.0', // 允许通过 IP 和 localhost 访问
     // port: 3000,      // 可选，指定端口号
     proxy: {
       '/api': {
