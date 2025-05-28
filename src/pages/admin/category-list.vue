@@ -42,7 +42,7 @@
     <el-card shadow="never">
       <!-- 新增按钮 -->
       <div class="mb-5">
-        <el-button type="primary" @click="dialogVisible = true">
+        <el-button type="primary" @click="addCategoryBtnClick">
           <el-icon class="mr-1">
             <Plus />
           </el-icon>
@@ -87,7 +87,7 @@
     </el-card>
   </div>
   <!-- 添加分类 -->
-  <el-dialog
+  <!-- <el-dialog
     v-model="dialogVisible"
     title="添加文章分类"
     width="40%"
@@ -97,7 +97,6 @@
   >
     <el-form ref="formRef" :rules="rules" :model="form">
       <el-form-item label="分类名称" prop="name" label-width="80px">
-        <!-- 输入框组件 -->
         <el-input
           size="large"
           v-model="form.name"
@@ -114,7 +113,30 @@
         <el-button type="primary" @click="onSubmit"> 提交 </el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog> -->
+  <FormDialog
+    ref="formDialogRef"
+    title="添加文章分类"
+    destroyOnClose
+    @submit="onSubmit"
+  >
+    <el-form ref="formRef" :rules="rules" :model="form">
+      <el-form-item
+        label="分类名称"
+        prop="name"
+        label-width="80px"
+        size="large"
+      >
+        <el-input
+          v-model="form.name"
+          placeholder="请输入分类名称"
+          maxlength="20"
+          show-word-limit
+          clearable
+        />
+      </el-form-item>
+    </el-form>
+  </FormDialog>
 </template>
 <script setup>
 // 引入所需图标
@@ -122,13 +144,21 @@
 import { ref, reactive } from "vue";
 import moment from "moment";
 import { showMessage, showModel } from "@/composables/utils";
+import FormDialog from "@/components/FormDialog.vue";
 import {
   getCategoryPageList,
   addCategory,
   deleteCategory,
-} from "@/api/admin/category";
+} from "@/api/admin/category"; 
 
-const dialogVisible = ref(false);
+// 对话框是否显示 修改为使用子组件中暴露的方法进行控制，如下formDialogRef.value.open();
+const formDialogRef = ref(null);
+
+// 新增分类按钮点击事件
+const addCategoryBtnClick = () => {
+  formDialogRef.value.open();
+};
+
 const formRef = ref(null);
 const form = reactive({
   name: "",
@@ -153,23 +183,23 @@ const deleteCategorySubmit = (row) => {
   // 弹出确认对话框
   showModel("是否确认删除该分类？")
     .then(() => {
-        // 调用删除分类接口
-        deleteCategory(row.id).then((res) => {
-          if (res.success == true) {
-            showMessage("删除成功");
-            // 重新请求分页接口，渲染数据
-            getTableData();
-          } else {
-            // 获取服务端返回的错误消息
-            let message = res.message
-            // 提示错误消息
-            showMessage(message, "error")
-          }
-        });
+      // 调用删除分类接口
+      deleteCategory(row.id).then((res) => {
+        if (res.success == true) {
+          showMessage("删除成功");
+          // 重新请求分页接口，渲染数据
+          getTableData();
+        } else {
+          // 获取服务端返回的错误消息
+          let message = res.message;
+          // 提示错误消息
+          showMessage(message, "error");
+        }
+      });
     })
     .catch(() => {
       console.log("取消了");
-    })
+    });
 };
 const onSubmit = () => {
   // 先验证 form 表单字段
@@ -179,14 +209,13 @@ const onSubmit = () => {
       return false;
     }
 
-    // 请求添加分类接口
     addCategory(form).then((res) => {
       if (res.success == true) {
         showMessage("添加成功");
         // 将表单中分类名称置空
         form.name = "";
         // 隐藏对话框
-        dialogVisible.value = false;
+        formDialogRef.value.close();
         // 重新请求分页接口，渲染数据
         getTableData();
       } else {
