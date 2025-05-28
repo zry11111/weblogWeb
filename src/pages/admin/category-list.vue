@@ -57,7 +57,11 @@
         <el-table-column label="操作">
           <template #default="scope">
             <!-- #default插槽用来设置获取当前行的数据，比如下面绑定某个函数需要使用到样式中的数据时就使用该参数-->
-            <el-button type="danger" size="small">
+            <el-button
+              type="danger"
+              size="small"
+              @click="deleteCategorySubmit(scope.row)"
+            >
               <el-icon class="mr-1">
                 <Delete />
               </el-icon>
@@ -117,8 +121,12 @@
 // import { Search, RefreshRight } from "@element-plus/icons-vue";
 import { ref, reactive } from "vue";
 import moment from "moment";
-import { showMessage } from '@/composables/utils'
-import { getCategoryPageList, addCategory } from "@/api/admin/category";
+import { showMessage, showModel } from "@/composables/utils";
+import {
+  getCategoryPageList,
+  addCategory,
+  deleteCategory,
+} from "@/api/admin/category";
 
 const dialogVisible = ref(false);
 const formRef = ref(null);
@@ -141,7 +149,28 @@ const rules = {
     },
   ],
 };
-
+const deleteCategorySubmit = (row) => {
+  // 弹出确认对话框
+  showModel("是否确认删除该分类？")
+    .then(() => {
+        // 调用删除分类接口
+        deleteCategory(row.id).then((res) => {
+          if (res.success == true) {
+            showMessage("删除成功");
+            // 重新请求分页接口，渲染数据
+            getTableData();
+          } else {
+            // 获取服务端返回的错误消息
+            let message = res.message
+            // 提示错误消息
+            showMessage(message, "error")
+          }
+        });
+    })
+    .catch(() => {
+      console.log("取消了");
+    })
+};
 const onSubmit = () => {
   // 先验证 form 表单字段
   formRef.value.validate((valid) => {
