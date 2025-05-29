@@ -132,7 +132,7 @@ function onKeyUp(e) {
 
 // 添加键盘监听
 onMounted(() => {
-    console.log('添加键盘监听')
+    // console.log('添加键盘监听')
     document.addEventListener('keyup', onKeyUp)
 })
 

@@ -62,6 +62,10 @@ const routes = [
         },
       },
     ],
+    meta: {
+      requireAuth: true, // 需要登录
+      title: "管理后台",
+    },
   },
 ];
 const router = createRouter({
