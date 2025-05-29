@@ -1,79 +1,83 @@
 <template>
-  <div class="bg-white h-[64px] flex pr-4 border-b border-slate-100">
-    <!-- 左边栏收缩、展开 -->
-    <div
-      class="w-[42px] h-[64px] cursor-pointer flex items-center justify-center text-gray-700 hover:bg-gray-200"
-      @click="handleMenuWidth"
-    >
-      <!-- 加一层div 防止Element Plus 内部的样式覆盖 Tailwind CSS 的样式 -->
-      <el-icon>
-        <Fold v-if="menuStore.menuWidth == '250px'" />
-        <Expand v-else />
-      </el-icon>
-    </div>
+  <!-- 固钉组件，通过设置 offset 属性来改变吸顶距离，默认值为 0。
+  emm,这里使用fixed来固定容器的话,会有其他的样式问题 -->
+  <el-affix :offset="0">
+    <div class="bg-white h-[64px] flex pr-4 border-b border-slate-100">
+      <!-- 左边栏收缩、展开 -->
+      <div
+        class="w-[42px] h-[64px] cursor-pointer flex items-center justify-center text-gray-700 hover:bg-gray-200"
+        @click="handleMenuWidth"
+      >
+        <!-- 加一层div 防止Element Plus 内部的样式覆盖 Tailwind CSS 的样式 -->
+        <el-icon>
+          <Fold v-if="menuStore.menuWidth == '250px'" />
+          <Expand v-else />
+        </el-icon>
+      </div>
 
-    <!-- 右边容器，通过 ml-auto 让其在父容器的右边 -->
-    <div class="ml-auto flex">
-      <!-- 点击刷新页面 -->
-      <el-tooltip
-        class="box-item"
-        effect="dark"
-        content="刷新"
-        placement="bottom"
-      >
-        <div
-          class="w-[42px] h-[64px] cursor-pointer flex items-center justify-center text-gray-700 hover:bg-gray-200"
-          @click="handleRefresh"
+      <!-- 右边容器，通过 ml-auto 让其在父容器的右边 -->
+      <div class="ml-auto flex">
+        <!-- 点击刷新页面 -->
+        <el-tooltip
+          class="box-item"
+          effect="dark"
+          content="刷新"
+          placement="bottom"
         >
-          <el-icon>
-            <Refresh />
-          </el-icon>
-        </div>
-      </el-tooltip>
-      <!-- 点击全屏展示 -->
-      <el-tooltip
-        class="box-item"
-        effect="dark"
-        content="全屏"
-        placement="bottom"
-      >
-        <div
-          class="w-[42px] h-[64px] cursor-pointer flex items-center justify-center text-gray-700 mr-2 hover:bg-gray-200"
-          @click="toggle"
+          <div
+            class="w-[42px] h-[64px] cursor-pointer flex items-center justify-center text-gray-700 hover:bg-gray-200"
+            @click="handleRefresh"
+          >
+            <el-icon>
+              <Refresh />
+            </el-icon>
+          </div>
+        </el-tooltip>
+        <!-- 点击全屏展示 -->
+        <el-tooltip
+          class="box-item"
+          effect="dark"
+          content="全屏"
+          placement="bottom"
         >
-          <el-icon>
-            <FullScreen v-if="!isFullscreen" />
-            <Aim v-else />
-          </el-icon>
-        </div>
-      </el-tooltip>
+          <div
+            class="w-[42px] h-[64px] cursor-pointer flex items-center justify-center text-gray-700 mr-2 hover:bg-gray-200"
+            @click="toggle"
+          >
+            <el-icon>
+              <FullScreen v-if="!isFullscreen" />
+              <Aim v-else />
+            </el-icon>
+          </div>
+        </el-tooltip>
 
-      <!-- 登录用户头像 -->
-      <el-dropdown
-        class="flex items-center justify-center"
-        @command="handleCommand"
-      >
-        <span
-          class="el-dropdown-link flex items-center justify-center text-gray-700 text-xs"
+        <!-- 登录用户头像 -->
+        <el-dropdown
+          class="flex items-center justify-center"
+          @command="handleCommand"
         >
-          <!-- 头像 Avatar -->
-          <el-avatar :size="25" src="/mikufans.jpg" />
-          {{ userStore.userInfo.username }}
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="updatePassword"
-              >修改密码</el-dropdown-item
-            >
-            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+          <span
+            class="el-dropdown-link flex items-center justify-center text-gray-700 text-xs"
+          >
+            <!-- 头像 Avatar -->
+            <el-avatar :size="25" src="/mikufans.jpg" />
+            {{ userStore.userInfo.username }}
+            <el-icon class="el-icon--right">
+              <arrow-down />
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="updatePassword"
+                >修改密码</el-dropdown-item
+              >
+              <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </div>
-  </div>
+  </el-affix>
   <!-- 修改密码 -->
   <!-- <el-dialog
     v-model="dialogVisible"
@@ -258,28 +262,30 @@ const onSubmit = () => {
     }
 
     // 调用修改用户密码接口
-    updateAdminPassword(form).then((res) => {
-      console.log(res);
-      // 判断是否成功
-      if (res.success == true) {
-        showMessage("密码重置成功，请重新登录！");
-        // 退出登录
-        userStore.logout();
+    updateAdminPassword(form)
+      .then((res) => {
+        console.log(res);
+        // 判断是否成功
+        if (res.success == true) {
+          showMessage("密码重置成功，请重新登录！");
+          // 退出登录
+          userStore.logout();
 
-        // 关闭表单
-        formDialogRef.value.close();
+          // 关闭表单
+          formDialogRef.value.close();
 
-        // 跳转登录页
-        router.push("/login");
-      } else {
-        // 获取服务端返回的错误消息
-        let message = res.message;
-        // 提示消息
-        showMessage(message, "error");
-      }
-    }).finally(() => {
-      formDialogRef.value.closeBtnLoading();
-    });
+          // 跳转登录页
+          router.push("/login");
+        } else {
+          // 获取服务端返回的错误消息
+          let message = res.message;
+          // 提示消息
+          showMessage(message, "error");
+        }
+      })
+      .finally(() => {
+        formDialogRef.value.closeBtnLoading();
+      });
   });
 };
 // 监听 Pinia store 中值的变化,将用户名同步到表单中
