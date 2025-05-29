@@ -2,7 +2,7 @@
   <div>
     <!-- 指定卡片没有阴影 -->
     <el-card shadow="never">
-      <el-form :model="form" label-width="160px" :rules="rules">
+      <el-form ref="formRef" :model="form" label-width="160px" :rules="rules">
         <el-form-item label="博客名称" prop="name">
           <el-input v-model="form.name" clearable />
           <!-- clearable表示当输入框中有内容时，显示一个X来清除输入框中的内容 -->
@@ -11,7 +11,7 @@
           <el-input v-model="form.author" clearable />
         </el-form-item>
         <el-form-item label="博客 LOGO" prop="logo">
-            <!-- auto-upload为true的情况下，会自动向action发送文件 -->
+          <!-- auto-upload为true的情况下，会自动向action发送文件 -->
           <el-upload
             class="avatar-uploader"
             action="#"
@@ -98,7 +98,9 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="onSubmit"> 保存 </el-button>
+          <el-button type="primary" @click="onSubmit" :loading="btnLoading">
+            保存
+          </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -107,7 +109,7 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { Check, Close } from "@element-plus/icons-vue";
-import { getBlogSettings } from "@/api/admin/blogsettings";
+import { getBlogSettings, updateBlogSettings } from "@/api/admin/blogsettings";
 import { uploadFile } from "@/api/admin/file";
 import { showMessage } from "@/composables/utils";
 const form = reactive({
@@ -196,22 +198,48 @@ const handleLogoChange = (file) => {
     showMessage("Logo上传成功");
   });
 };
-const handleAvatarChange = (file) =>{
-    let formData = new FormData();
-    formData.append("file", file.raw);
-    uploadFile(formData).then((e) => {
-      // 响参失败，提示错误消息
-      if (e.success == false) {
-        let message = e.message;
-        showMessage(message, "error");
-        return;
-      }
+const handleAvatarChange = (file) => {
+  let formData = new FormData();
+  formData.append("file", file.raw);
+  uploadFile(formData).then((e) => {
+    // 响参失败，提示错误消息
+    if (e.success == false) {
+      let message = e.message;
+      showMessage(message, "error");
+      return;
+    }
 
-      // 成功则设置 avatar 链接，并提示成功
-      form.avatar = e.data.url;
-      showMessage("头像上传成功");
-    });
-}
+    // 成功则设置 avatar 链接，并提示成功
+    form.avatar = e.data.url;
+    showMessage("头像上传成功");
+  });
+};
+// 表单引用
+const formRef = ref(null);
+const btnLoading = ref(false);
+const onSubmit = () => {
+  formRef.value.validate((valid) => {
+    if (!valid) {
+      console.log("表单验证不通过");
+      return false;
+    }
+    btnLoading.value = true;
+    updateBlogSettings(form)
+      .then((res) => {
+        if (res.success == true) {
+          // 对数据进行重新初始化，回显？
+          initBlogSettings()
+          showMessage("保存成功");
+        } else {
+          let message = res.message;
+          showMessage(message, "error");
+        }
+      })
+      .finally(() => {
+        btnLoading.value = false;
+      });
+  });
+};
 </script>
 
 <style scoped>
