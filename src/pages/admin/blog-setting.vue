@@ -11,12 +11,13 @@
           <el-input v-model="form.author" clearable />
         </el-form-item>
         <el-form-item label="博客 LOGO" prop="logo">
+            <!-- auto-upload为true的情况下，会自动向action发送文件 -->
           <el-upload
             class="avatar-uploader"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            action="#"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
+            :auto-upload="false"
+            :on-change="handleLogoChange"
           >
             <img v-if="form.logo" :src="form.logo" class="avatar" />
             <el-icon v-else class="avatar-uploader-icon">
@@ -27,10 +28,10 @@
         <el-form-item label="作者头像" prop="avatar">
           <el-upload
             class="avatar-uploader"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            action="#"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
+            :auto-upload="false"
+            :on-change="handleAvatarChange"
           >
             <img v-if="form.avatar" :src="form.avatar" class="avatar" />
             <el-icon v-else class="avatar-uploader-icon">
@@ -41,7 +42,7 @@
         <el-form-item label="介绍语" prop="introduction">
           <el-input v-model="form.introduction" type="textarea" />
         </el-form-item>
-        
+
         <!-- 开启 Github 访问 -->
         <el-form-item label="开启 GihHub 访问">
           <el-switch
@@ -105,7 +106,10 @@
 </template>
 <script setup>
 import { ref, reactive } from "vue";
-import { Check,Close } from "@element-plus/icons-vue";
+import { Check, Close } from "@element-plus/icons-vue";
+import { getBlogSettings } from "@/api/admin/blogsettings";
+import { uploadFile } from "@/api/admin/file";
+import { showMessage } from "@/composables/utils";
 const form = reactive({
   name: "",
   author: "",
@@ -124,34 +128,90 @@ const rules = {
   introduction: [{ required: true, message: "请输入介绍语", trigger: "blur" }],
 };
 // 是否开启 GitHub
-const isGithubChecked = ref(false)
+const isGithubChecked = ref(false);
 // 是否开启 Gitee
-const isGiteeChecked = ref(false)
+const isGiteeChecked = ref(false);
 // 是否开启知乎
-const isZhihuChecked = ref(false)
+const isZhihuChecked = ref(false);
 // 是否开启 CSDN
-const isCSDNChecked = ref(false)
+const isCSDNChecked = ref(false);
 // 监听 Github Switch 改变事件
 const githubSwitchChange = (checked) => {
-    if (checked == false) {
-        form.githubHomepage = ''
-    }
-}
+  if (checked == false) {
+    form.githubHomepage = "";
+  }
+};
 
 // 监听 Gitee Switch 改变事件
 const giteeSwitchChange = (checked) => {
-    if (checked == false) {
-        form.giteeHomepage = ''
-    }
-}
+  if (checked == false) {
+    form.giteeHomepage = "";
+  }
+};
 
 // 监听 CSDN Switch 改变事件
 const csdnSwitchChange = (checked) => {
-    if (checked == false) {
-        form.csdnHomepage = ''
+  if (checked == false) {
+    form.csdnHomepage = "";
+  }
+};
+function initBlogSettings() {
+  getBlogSettings().then((res) => {
+    if (res.success == true) {
+      // 设置表单数据
+      form.name = res.data.name;
+      form.author = res.data.author;
+      form.logo = res.data.logo;
+      form.avatar = res.data.avatar;
+      form.introduction = res.data.introduction;
+      if (res.data.githubHomepage) {
+        isGithubChecked.value = true;
+        form.githubHomepage = res.data.githubHomepage;
+      }
+      if (res.data.giteeHomepage) {
+        isGiteeChecked.value = true;
+        form.giteeHomepage = res.data.giteeHomepage;
+      }
+      if (res.data.csdnHomepage) {
+        isCSDNChecked.value = true;
+        form.csdnHomepage = res.data.csdnHomepage;
+      }
     }
+  });
 }
+initBlogSettings();
+const handleLogoChange = (file) => {
+  let formData = new FormData();
+  formData.append("file", file.raw);
+  uploadFile(formData).then((e) => {
+    // 响参失败，提示错误消息
+    if (e.success == false) {
+      let message = e.message;
+      showMessage(message, "error");
+      return;
+    }
 
+    // 成功则设置 logo 链接，并提示成功
+    form.logo = e.data.url;
+    showMessage("Logo上传成功");
+  });
+};
+const handleAvatarChange = (file) =>{
+    let formData = new FormData();
+    formData.append("file", file.raw);
+    uploadFile(formData).then((e) => {
+      // 响参失败，提示错误消息
+      if (e.success == false) {
+        let message = e.message;
+        showMessage(message, "error");
+        return;
+      }
+
+      // 成功则设置 avatar 链接，并提示成功
+      form.avatar = e.data.url;
+      showMessage("头像上传成功");
+    });
+}
 </script>
 
 <style scoped>
