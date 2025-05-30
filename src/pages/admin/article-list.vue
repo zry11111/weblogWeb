@@ -75,7 +75,7 @@
               </el-icon>
               编辑</el-button
             >
-            <el-button type="danger" size="small">
+            <el-button type="danger" size="small" @click="deleteArticleSubmit(scope.row)">
               <el-icon class="mr-1">
                 <Delete />
               </el-icon>
@@ -107,7 +107,8 @@
 import { ref, reactive } from "vue";
 import { Search, RefreshRight } from "@element-plus/icons-vue";
 import moment from "moment";
-import { getArticlePageList } from "@/api/admin/article";
+import { showMessage,showModel } from "@/composables/utils";
+import { getArticlePageList,deleteArticle } from "@/api/admin/article";
 
 // 模糊搜索的文章标题
 const searchArticleTitle = ref("");
@@ -204,5 +205,29 @@ const handleSizeChange = (chooseSize) => {
   console.log("选择的页码" + chooseSize);
   size.value = chooseSize;
   getTableData();
+};
+// 删除文章
+const deleteArticleSubmit = (row) => {
+  showModel("是否确定要删除该文章？")
+    .then(() => {
+    //这里直接将行数据的对象传入了方法中，这里再从数据对象中取出id
+      deleteArticle(row.id).then((res) => {
+        console.log(row.id)
+        if (res.success == false) {
+          // 获取服务端返回的错误消息
+          let message = res.message;
+          // 提示错误消息
+          showMessage(message, "error");
+          return;
+        }
+
+        showMessage("删除成功");
+        // 重新请求分页接口，渲染数据
+        getTableData();
+      });
+    })
+    .catch(() => {
+      console.log("取消了");
+    });
 };
 </script>
