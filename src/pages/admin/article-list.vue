@@ -42,7 +42,7 @@
 
     <el-card shadow="never">
       <!-- 写文章按钮 -->
-      <div class="mb-5">
+      <div class="mb-5" @click="isArticlePublishEditorShow = true">
         <el-button type="primary">
           <el-icon class="mr-1">
             <EditPen />
@@ -75,7 +75,11 @@
               </el-icon>
               编辑</el-button
             >
-            <el-button type="danger" size="small" @click="deleteArticleSubmit(scope.row)">
+            <el-button
+              type="danger"
+              size="small"
+              @click="deleteArticleSubmit(scope.row)"
+            >
               <el-icon class="mr-1">
                 <Delete />
               </el-icon>
@@ -101,14 +105,151 @@
       </div>
     </el-card>
   </div>
+  <!-- 写博客 -->
+  <el-dialog
+    v-model="isArticlePublishEditorShow"
+    :fullscreen="true"
+    :show-close="false"
+  >
+    <template #header="{ close, titleId, titleClass }">
+      <!-- 固钉组件，固钉到顶部 -->
+      <el-affix :offset="20" style="width: 100%">
+        <!-- 指定 flex 布局， 高度为 10， 背景色为白色 -->
+        <div class="flex h-5 bg-white">
+          <!-- 字体加粗 -->
+          <h4 class="font-bold">写文章</h4>
+          <!-- 靠右对齐 -->
+          <div class="ml-auto flex">
+            <el-button @click="isArticlePublishEditorShow = false"
+              >取消</el-button
+            >
+            <el-button type="primary">
+              <el-icon class="mr-1">
+                <Promotion />
+              </el-icon>
+              发布
+            </el-button>
+          </div>
+        </div>
+      </el-affix>
+    </template>
+    <!-- label-position="top" 用于指定 label 元素在上面 -->
+    <el-form
+      :model="form"
+      ref="publishArticleFormRef"
+      label-position="top"
+      size="large"
+      :rules="rules"
+    >
+      <el-form-item label="标题" prop="title">
+        <el-input
+          v-model="form.title"
+          autocomplete="off"
+          size="large"
+          maxlength="40"
+          show-word-limit
+          clearable
+        />
+      </el-form-item>
+      <el-form-item label="内容" prop="content">
+        <!-- Markdown 编辑器 -->
+        <MdEditor v-model="form.content" editorId="publishArticleEditor" />
+      </el-form-item>
+
+      <el-form-item label="封面" prop="cover">
+        <el-upload
+          class="avatar-uploader"
+          action="#"
+          :auto-upload="false"
+          :show-file-list="false"
+        >
+          <img v-if="form.cover" :src="form.cover" class="avatar" />
+          <el-icon v-else class="avatar-uploader-icon">
+            <Plus />
+          </el-icon>
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="摘要" prop="summary">
+        <!-- :rows="3" 指定 textarea 默认显示 3 行 -->
+        <el-input
+          v-model="form.summary"
+          :rows="3"
+          type="textarea"
+          placeholder="请输入文章摘要"
+        />
+      </el-form-item>
+      <el-form-item label="分类" prop="categoryId">
+        <el-select
+          v-model="form.categoryId"
+          clearable
+          placeholder="---请选择---"
+          size="large"
+        >
+        </el-select>
+      </el-form-item>
+      <el-form-item label="标签" prop="tags">
+        <!-- 标签选择 -->
+        <el-select
+          v-model="form.tags"
+          multiple
+          filterable
+          remote
+          reserve-keyword
+          placeholder="---请输入---"
+          remote-show-suffix
+          :remote-method="remoteMethod"
+          allow-create
+          default-first-option
+          :loading="tagSelectLoading"
+          size="large"
+        >
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script setup>
 import { ref, reactive } from "vue";
 import { Search, RefreshRight } from "@element-plus/icons-vue";
 import moment from "moment";
-import { showMessage,showModel } from "@/composables/utils";
-import { getArticlePageList,deleteArticle } from "@/api/admin/article";
+import { MdEditor } from "md-editor-v3";
+import 'md-editor-v3/lib/style.css'
+import { showMessage, showModel } from "@/composables/utils";
+import { getArticlePageList, deleteArticle } from "@/api/admin/article";
+// 显示编写文章控件
+const isArticlePublishEditorShow = ref(false);
+
+// 发布文章表单引用
+const publishArticleFormRef = ref(null);
+
+// 表单对象
+const form = reactive({
+  id: null,
+  title: "",
+  content: "请输入内容",
+  cover: "",
+  categoryId: null,
+  tags: [],
+  summary: "",
+});
+
+// 表单校验规则
+const rules = {
+  title: [
+    { required: true, message: "请输入文章标题", trigger: "blur" },
+    {
+      min: 1,
+      max: 40,
+      message: "文章标题要求大于1个字符，小于40个字符",
+      trigger: "blur",
+    },
+  ],
+  content: [{ required: true }],
+  cover: [{ required: true }],
+  categoryId: [{ required: true, message: "请选择文章分类", trigger: "blur" }],
+  tags: [{ required: true, message: "请选择文章标签", trigger: "blur" }],
+};
 
 // 模糊搜索的文章标题
 const searchArticleTitle = ref("");
@@ -210,9 +351,9 @@ const handleSizeChange = (chooseSize) => {
 const deleteArticleSubmit = (row) => {
   showModel("是否确定要删除该文章？")
     .then(() => {
-    //这里直接将行数据的对象传入了方法中，这里再从数据对象中取出id
+      //这里直接将行数据的对象传入了方法中，这里再从数据对象中取出id
       deleteArticle(row.id).then((res) => {
-        console.log(row.id)
+        console.log(row.id);
         if (res.success == false) {
           // 获取服务端返回的错误消息
           let message = res.message;
@@ -231,3 +372,19 @@ const deleteArticleSubmit = (row) => {
     });
 };
 </script>
+<style scoped>
+/* 封面图片样式 */
+.avatar-uploader .avatar {
+  width: 200px;
+  height: 100px;
+  display: block;
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 200px;
+  height: 100px;
+  text-align: center;
+}
+</style>
