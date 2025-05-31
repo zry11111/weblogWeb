@@ -80,8 +80,8 @@ import { setToken } from "@/composables/cookie";
 import { useUserStore } from "@/stores/user"
 const userStore = useUserStore()
 const form = reactive({
-  username: "",
-  password: "",
+  username: "稚生1234",
+  password: "123456",
 });
 // 登录状态加载
 const loading = ref(false);

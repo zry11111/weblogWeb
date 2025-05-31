@@ -14,21 +14,21 @@ export const useUserStore = defineStore(
       getUserInfo().then((res) => {
         if (res.success == true) {
           userInfo.value = res.data;
-          console.log("用户信息", userInfo.value);
+          // console.log("用户信息", userInfo.value);
         }
       });
     }
     // 获取用户信息
-    function getUserInfo() {
-      return userInfo.value;
-    }
+    // function getUserInfo() {
+    //   return userInfo.value;
+    // }
     function logout() {
       // 清除 token
       removeToken();
       // 清除用户信息
       userInfo.value = {};
     }
-    return { userInfo, setUserInfo,logout };
+    return { userInfo,setUserInfo,logout };
   },
   {
     // 开启持久化

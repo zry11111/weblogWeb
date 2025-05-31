@@ -9,17 +9,17 @@ const TOKEN_KEY = 'Authorization'
 
 // 获取 Token 值
 export function getToken() {
-    return cookie.get(TOKEN_KEY)
+    return cookie.get(TOKEN_KEY,{path: "/" }) || null
 }
 
 // 设置 Token 到 Cookie 中
 export function setToken(token) {
-    return cookie.set(TOKEN_KEY, token)
+    return cookie.set(TOKEN_KEY, token,{path: '/'})
 }
 
 // 删除 Token
 export function removeToken() {
-    return cookie.remove(TOKEN_KEY)
+    return cookie.remove(TOKEN_KEY,{path: '/'})
 }
 
 // ============================== 标签页 ==============================
