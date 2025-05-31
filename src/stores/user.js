@@ -18,6 +18,10 @@ export const useUserStore = defineStore(
         }
       });
     }
+    // 获取用户信息
+    function getUserInfo() {
+      return userInfo.value;
+    }
     function logout() {
       // 清除 token
       removeToken();
