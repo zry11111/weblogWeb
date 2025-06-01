@@ -8,6 +8,8 @@ import AdminBlogSetting from "@/pages/admin/blog-setting.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import Admin from "@/layouts/admin/admin.vue";
 import ArchiveList from "@/pages/frontend/archive-list.vue";
+import CategoryList from "@/pages/frontend/category-list.vue";
+import CategoryArticleList from '@/pages/frontend/category-article-list.vue'
 const routes = [
   {
     path: "/",
@@ -24,6 +26,21 @@ const routes = [
       title: "Weblog 归档页",
     },
   },
+  {
+    path: "/category/list", // 分类页
+    component: CategoryList,
+    meta: {
+      // meta 信息
+      title: "Weblog 分类页",
+    },
+  },
+  {
+    path: '/category/article/list', // 分类文章页
+    component: CategoryArticleList,
+    meta: { // meta 信息
+        title: 'Weblog 分类文章页'
+    }
+},
   {
     path: "/login",
     component: Login,
