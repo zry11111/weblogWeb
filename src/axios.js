@@ -1,6 +1,7 @@
 import axios from "axios"
-import { getToken,removeToken } from "@/composables/cookie"
+import { getToken } from "@/composables/cookie"
 import { showMessage } from "@/composables/utils";
+import { useUserStore } from "@/stores/user"
 const instance = axios.create({
     baseURL: "/api",
     timeout: 7000, // 请求超时时间
@@ -34,9 +35,8 @@ instance.interceptors.response.use(
     function(error){
         let status = error.response.status
         if(status === 401){
-            // 未授权,删除token中的令牌
-            // console.log("未授权，删除token")
-            removeToken()
+            let useStore = useUserStore()
+            useStore.logout() // 清除用户信息
             //刷新页面，或者将用户重定向到登录页面，这里要导入路由，算了
             location.reload()
         }
