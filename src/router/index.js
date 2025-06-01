@@ -1,18 +1,27 @@
 import Index from "@/pages/frontend/index.vue";
 import Login from "@/pages/admin/login.vue";
 import AdminIndex from "@/pages/admin/index.vue";
-import AdminArticleList from '@/pages/admin/article-list.vue'
-import AdminCategoryList from '@/pages/admin/category-list.vue'
-import AdminTagList from '@/pages/admin/tag-list.vue'
-import AdminBlogSetting from '@/pages/admin/blog-setting.vue'
+import AdminArticleList from "@/pages/admin/article-list.vue";
+import AdminCategoryList from "@/pages/admin/category-list.vue";
+import AdminTagList from "@/pages/admin/tag-list.vue";
+import AdminBlogSetting from "@/pages/admin/blog-setting.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import Admin from "@/layouts/admin/admin.vue";
+import ArchiveList from "@/pages/frontend/archive-list.vue";
 const routes = [
   {
     path: "/",
     component: Index,
     meta: {
       title: "首页",
+    },
+  },
+  {
+    path: "/archive/list", // 归档页
+    component: ArchiveList,
+    meta: {
+      // meta 信息
+      title: "Weblog 归档页",
     },
   },
   {
