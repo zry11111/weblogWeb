@@ -49,9 +49,7 @@
           <!-- 文章 -->
           <article>
             <!-- 文章标题 -->
-            <h1 class="mt-4 font-bold text-3xl">
-              从零手撸前后端分离博客（已更新11w+字）
-            </h1>
+            <h1 class="mt-4 font-bold text-3xl">{{ article.title }}</h1>
             <!-- 文章 meta 信息，如发布时间等 -->
             <div class="text-gray-400 flex items-center mt-5 text-sm">
               <!-- 发布时间 -->
@@ -70,8 +68,8 @@
                   d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"
                 />
               </svg>
-              <span class="hidden md:inline mr-1">发表于</span> 2023-11-02
-              16:00:00
+              <span class="mr-1 hidden md:inline">发表于</span>
+              {{ article.createTime }}
 
               <!-- 分类 -->
               <svg
@@ -89,8 +87,16 @@
                   d="M1 5v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H1Zm0 0V2a1 1 0 0 1 1-1h5.443a1 1 0 0 1 .8.4l2.7 3.6H1Z"
                 />
               </svg>
-              <span class="hidden md:inline mr-1">分类于</span>
-              <a href="#" class="hover:underline">Java</a>
+              <a
+                @click="
+                  goCategoryArticleListPage(
+                    article.categoryId,
+                    article.categoryName
+                  )
+                "
+                class="cursor-pointer mr-1 hover:underline"
+                >{{ article.categoryName }}</a
+              >
 
               <!-- 阅读量 -->
               <svg
@@ -112,21 +118,22 @@
                   />
                 </g>
               </svg>
-              <span class="hidden md:inline mr-1">阅读量</span> 1000
+              <!-- 阅读量 -->
+              <span class="mr-1 hidden md:inline">阅读量</span>
+              {{ article.readNum }}
             </div>
             <!-- 正文 -->
-            <div class="mt-5">正文</div>
+            <div class="mt-5" v-html="article.content"></div>
+
             <!-- 标签集合 -->
-            <div class="mt-5">
+            <div v-if="article.tags && article.tags.length > 0" class="mt-5">
               <span
+                @click="goTagArticleListPage(tag.id, tag.name)"
+                v-for="(tag, index) in article.tags"
+                :key="index"
                 class="inline-block mb-1 cursor-pointer bg-green-100 text-green-800 text-xs font-medium mr-2 px-3 py-1 rounded-full hover:bg-green-200 hover:text-green-900 dark:bg-green-900 dark:text-green-300"
               >
-                # Java
-              </span>
-              <span
-                class="inline-block mb-1 cursor-pointer bg-green-100 text-green-800 text-xs font-medium mr-2 px-3 py-1 rounded-full hover:bg-green-200 hover:text-green-900 dark:bg-green-900 dark:text-green-300"
-              >
-                # 项目实战
+                # {{ tag.name }}
               </span>
             </div>
             <!-- 上下篇 -->
@@ -135,8 +142,11 @@
               <div class="basis-1/2">
                 <!-- h-full 指定高度占满 -->
                 <a
-                  href="#"
-                  class="flex flex-col h-full p-4 mr-3 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  v-if="article.preArticle"
+                  @click="
+                    router.push('/article/' + article.preArticle.articleId)
+                  "
+                  class="cursor-pointer flex flex-col h-full p-4 mr-3 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <div>
                     <svg
@@ -156,15 +166,18 @@
                     </svg>
                     上一篇
                   </div>
-                  <div>文章标题1</div>
+                  <div>{{ article.preArticle.articleTitle }}</div>
                 </a>
               </div>
 
               <div class="basis-1/2">
                 <!-- text-right 指定文字居右显示 -->
                 <a
-                  href="#"
-                  class="flex flex-col h-full text-right p-4 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  v-if="article.nextArticle"
+                  @click="
+                    router.push('/article/' + article.nextArticle.articleId)
+                  "
+                  class="cursor-pointer flex flex-col h-full text-right p-4 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <div>
                     下一篇
@@ -184,7 +197,7 @@
                       ></path>
                     </svg>
                   </div>
-                  <div>文章标题2</div>
+                  <div>{{ article.nextArticle.articleTitle }}</div>
                 </a>
               </div>
             </nav>
@@ -215,5 +228,40 @@ import Footer from "@/layouts/frontend/components/Footer.vue";
 import UserInfoCard from "@/layouts/frontend/components/UserInfoCard.vue";
 import TagListCard from "@/layouts/frontend/components/TagListCard.vue";
 import CategoryListCard from "@/layouts/frontend/components/CategoryListCard.vue";
+import { getArticleDetail } from "@/api/frontend/article";
+import { useRoute, useRouter } from "vue-router";
+import { ref, watch } from "vue";
+
+const route = useRoute();
+const router = useRouter();
+// 监听路由
+watch(route, (newRoute, oldRoute) => {
+  // 重新渲染文章详情
+  refreshArticleDetail(newRoute.params.articleId);
+});
+
+// 文章数据
+const article = ref({});
+
+// 获取文章详情
+function refreshArticleDetail(articleId) {
+  getArticleDetail(articleId).then((res) => {
+    if (res.success) {
+      article.value = res.data;
+    }
+  });
+}
+refreshArticleDetail(route.params.articleId);
+
+// 跳转分类文章列表页
+const goCategoryArticleListPage = (id, name) => {
+  // 跳转时通过 query 携带参数（分类 ID、分类名称）
+  router.push({ path: "/category/article/list", query: { id, name } });
+};
+// 跳转标签文章列表页
+const goTagArticleListPage = (id, name) => {
+  // 跳转时通过 query 携带参数（标签 ID、标签名称）
+  router.push({ path: "/tag/article/list", query: { id, name } });
+};
 </script>
 
