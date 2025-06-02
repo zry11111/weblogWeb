@@ -112,7 +112,7 @@
     :show-close="false"
     :close-on-press-escape="false"
   >
-    <template #header="{ close, titleId, titleClass }">
+    <template>
       <!-- 固钉组件，固钉到顶部 -->
       <el-affix :offset="20" style="width: 100%">
         <!-- 指定 flex 布局， 高度为 10， 背景色为白色 -->
@@ -234,7 +234,7 @@
     :show-close="false"
     :close-on-press-escape="false"
   >
-    <template #header="{ close, titleId, titleClass }">
+    <template>
       <!-- 固钉组件，固钉到顶部 -->
       <el-affix :offset="20" style="width: 100%">
         <!-- 指定 flex 布局， 高度为 10， 背景色为白色 -->
