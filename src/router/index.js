@@ -9,7 +9,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import Admin from "@/layouts/admin/admin.vue";
 import ArchiveList from "@/pages/frontend/archive-list.vue";
 import CategoryList from "@/pages/frontend/category-list.vue";
-import CategoryArticleList from '@/pages/frontend/category-article-list.vue'
+import CategoryArticleList from "@/pages/frontend/category-article-list.vue";
+import TagList from "@/pages/frontend/tag-list.vue";
+import TagArticleList from "@/pages/frontend/tag-article-list.vue";
+import ArticleDetail from "@/pages/frontend/article-detail.vue";
 const routes = [
   {
     path: "/",
@@ -35,12 +38,37 @@ const routes = [
     },
   },
   {
-    path: '/category/article/list', // 分类文章页
+    path: "/category/article/list", // 分类文章页
     component: CategoryArticleList,
-    meta: { // meta 信息
-        title: 'Weblog 分类文章页'
-    }
-},
+    meta: {
+      // meta 信息
+      title: "Weblog 分类文章页",
+    },
+  },
+  {
+    path: "/tag/list", // 标签列表页
+    component: TagList,
+    meta: {
+      // meta 信息
+      title: "Weblog 标签列表页",
+    },
+  },
+  {
+    path: "/tag/article/list", // 标签列表页
+    component: TagArticleList,
+    meta: {
+      // meta 信息
+      title: "Weblog 标签文章页",
+    },
+  },
+  {
+    path: "/article/:articleId", // 文章详情页
+    component: ArticleDetail,
+    meta: {
+      // meta 信息
+      title: "Weblog 详情页",
+    },
+  },
   {
     path: "/login",
     component: Login,

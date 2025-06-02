@@ -17,7 +17,7 @@
               class="h-full bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700"
             >
               <!-- 文章封面 -->
-              <a href="#" class="overflow-hidden">
+              <a @click="goArticleDetailPage(article.id)" class="overflow-hidden cursor-pointer">
                 <img
                   class="rounded-t-lg h-48 w-full object-cover"
                   :src="article.cover"
@@ -35,7 +35,7 @@
                   </span>
                 </div>
                 <!-- 文章标题 -->
-                <a href="#">
+                <a @click="goArticleDetailPage(article.id)" class="cursor-pointer">
                   <h2
                     class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white"
                   >
@@ -194,6 +194,8 @@ import TagListCard from "@/layouts/frontend/components/TagListCard.vue";
 import { initTooltips } from "flowbite";
 import { onMounted, ref } from "vue";
 import { getArticlePageList } from "@/api/frontend/article";
+import { useRouter } from "vue-router";
+const router = useRouter();
 // 文章集合
 const articles = ref([]);
 // 总文章数
@@ -223,4 +225,8 @@ getArticles(current.value);
 onMounted(() => {
   initTooltips();
 });
+// 跳转文章详情页
+const goArticleDetailPage = (articleId) => {
+  router.push("/article/" + articleId);
+};
 </script>
