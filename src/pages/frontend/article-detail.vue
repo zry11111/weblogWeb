@@ -212,7 +212,7 @@
 
       <!-- 右边侧边栏，占用一列 -->
       <aside class="col-span-4 md:col-span-1">
-        <div class="sticky top-[5.5rem]">
+        <div>
           <!-- 博主信息 -->
           <UserInfoCard></UserInfoCard>
 
@@ -222,6 +222,7 @@
           <!-- 标签 -->
           <TagListCard></TagListCard>
         </div>
+        <Toc></Toc>
       </aside>
     </div>
   </main>
@@ -231,6 +232,7 @@
 </template>
 
 <script setup>
+import Toc from "@/layouts/frontend/components/Toc.vue";
 import Header from "@/layouts/frontend/components/Header.vue";
 import Footer from "@/layouts/frontend/components/Footer.vue";
 import UserInfoCard from "@/layouts/frontend/components/UserInfoCard.vue";
