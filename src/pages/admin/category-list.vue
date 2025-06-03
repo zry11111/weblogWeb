@@ -92,34 +92,6 @@
       </div>
     </el-card>
   </div>
-  <!-- 添加分类 -->
-  <!-- <el-dialog
-    v-model="dialogVisible"
-    title="添加文章分类"
-    width="40%"
-    :draggable="true"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-  >
-    <el-form ref="formRef" :rules="rules" :model="form">
-      <el-form-item label="分类名称" prop="name" label-width="80px">
-        <el-input
-          size="large"
-          v-model="form.name"
-          placeholder="请输入分类名称"
-          maxlength="20"
-          show-word-limit
-          clearable
-        />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="onSubmit"> 提交 </el-button>
-      </span>
-    </template>
-  </el-dialog> -->
   <FormDialog
     ref="formDialogRef"
     title="添加文章分类"

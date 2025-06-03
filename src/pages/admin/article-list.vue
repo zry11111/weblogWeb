@@ -119,7 +119,6 @@
     :show-close="false"
     :close-on-press-escape="false"
   >
-    <template>
       <!-- 固钉组件，固钉到顶部 -->
       <el-affix :offset="20" style="width: 100%">
         <!-- 指定 flex 布局， 高度为 10， 背景色为白色 -->
@@ -140,7 +139,6 @@
           </div>
         </div>
       </el-affix>
-    </template>
     <!-- label-position="top" 用于指定 label 元素在上面 -->
     <el-form
       :model="form"
@@ -241,7 +239,6 @@
     :show-close="false"
     :close-on-press-escape="false"
   >
-    <template>
       <!-- 固钉组件，固钉到顶部 -->
       <el-affix :offset="20" style="width: 100%">
         <!-- 指定 flex 布局， 高度为 10， 背景色为白色 -->
@@ -262,7 +259,6 @@
           </div>
         </div>
       </el-affix>
-    </template>
     <!-- label-position="top" 用于指定 label 元素在上面 -->
     <el-form
       :model="updateArticleForm"
