@@ -59,7 +59,8 @@
         style="width: 100%"
         v-loading="tableLoading"
       >
-        <el-table-column prop="title" label="标题" width="400" />
+        <el-table-column prop="id" label="ID" width="50" />
+        <el-table-column prop="title" label="标题" width="300" />
         <el-table-column prop="cover" label="封面" width="80">
           <template #default="scope">
             <el-image style="width: 50px" :src="scope.row.cover" />
@@ -74,6 +75,12 @@
                 <Edit />
               </el-icon>
               编辑</el-button
+            >
+            <el-button size="small" @click="goArticleDetailPage(scope.row.id)">
+              <el-icon class="mr-1">
+                <View />
+              </el-icon>
+              预览</el-button
             >
             <el-button
               type="danger"
@@ -364,6 +371,8 @@ import "md-editor-v3/lib/style.css";
 import { searchTags, getTagSelectList } from "@/api/admin/tag";
 import { showMessage, showModel } from "@/composables/utils";
 import { getCategorySelectList } from "@/api/admin/category";
+import { useRouter } from "vue-router";
+const router = useRouter();
 import {
   getArticlePageList,
   deleteArticle,
@@ -710,6 +719,10 @@ const updateSubmit = () => {
       getTableData();
     });
   });
+};
+// 跳转文章详情页
+const goArticleDetailPage = (articleId) => {
+  router.push("/article/" + articleId);
 };
 </script>
 <style scoped>
