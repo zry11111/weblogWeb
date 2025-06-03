@@ -292,9 +292,11 @@
                 p-id="43939"
               ></path>
             </svg>
-            每日文章发布热点图
+            近四个月文章发布热点图
           </h2>
-          <div>内容</div>
+          <ArticlePublishCalendar
+            :value="articlePublishInfo"
+          ></ArticlePublishCalendar>
         </div>
       </div>
 
@@ -331,7 +333,7 @@
             </svg>
             近一周 PV 访问量
           </h2>
-          <div>内容</div>
+          <ArticlePVLineChat :value="articlePVInfo"></ArticlePVLineChat>
         </div>
       </div>
     </div>
@@ -339,8 +341,14 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import { getBaseStatisticsInfo } from "@/api/admin/dashboard";
-import CountTo from '@/components/CountTo.vue'
+import {
+  getBaseStatisticsInfo,
+  getPublishArticleStatisticsInfo,
+  getArticlePVStatisticsInfo
+} from "@/api/admin/dashboard";
+import CountTo from "@/components/CountTo.vue";
+import ArticlePublishCalendar from "@/components/ArticlePublishCalendar.vue";
+import ArticlePVLineChat from "@/components/ArticlePVLineChat.vue";
 
 // 文章总数，默认值为 0
 const articleTotalCount = ref(0);
@@ -359,4 +367,18 @@ getBaseStatisticsInfo().then((res) => {
     pvTotalCount.value = res.data.pvTotalCount;
   }
 });
+// 按日统计文章发布数据
+const articlePublishInfo = ref({});
+getPublishArticleStatisticsInfo().then((res) => {
+  if (res.success) {
+    articlePublishInfo.value = res.data;
+  }
+});
+// 近一周文章 PV 数据
+const articlePVInfo = ref({})
+getArticlePVStatisticsInfo().then((res) => {
+    if (res.success) {
+        articlePVInfo.value = res.data
+    }
+})
 </script>
