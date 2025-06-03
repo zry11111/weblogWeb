@@ -5,7 +5,7 @@
     :style="{ width: menuStore.menuWidth }"
   >
     <!-- 顶部 Logo, 指定高度为 64px, 和右边的 Header 头保持一样高 -->
-    <div class="flex items-center justify-center h-[64px]">
+    <div @click="$router.push('/')" class="flex items-center justify-center h-[64px]">
         <!-- 后面再改这里的图片 -->
       <img
         v-if="menuStore.menuWidth == '250px'"

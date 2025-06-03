@@ -225,7 +225,8 @@
       </aside>
     </div>
   </main>
-
+  <!-- 返回顶部 -->
+  <ScrollToTopButton></ScrollToTopButton>
   <Footer></Footer>
 </template>
 
@@ -235,6 +236,7 @@ import Footer from "@/layouts/frontend/components/Footer.vue";
 import UserInfoCard from "@/layouts/frontend/components/UserInfoCard.vue";
 import TagListCard from "@/layouts/frontend/components/TagListCard.vue";
 import CategoryListCard from "@/layouts/frontend/components/CategoryListCard.vue";
+import ScrollToTopButton from "@/layouts/frontend/components/ScrollToTopButton.vue";
 import { getArticleDetail } from "@/api/frontend/article";
 import { useRoute, useRouter } from "vue-router";
 import { ref, watch, onMounted } from "vue";
@@ -256,8 +258,8 @@ const article = ref({});
 // 获取文章详情
 function refreshArticleDetail(articleId) {
   getArticleDetail(articleId).then((res) => {
-    if (!res.success && res.errorCode == '20011') {
-      router.push({name:'NotFound'}); // 跳转到 404 页面
+    if (!res.success && res.errorCode == "20011") {
+      router.push({ name: "NotFound" }); // 跳转到 404 页面
       return;
     }
     article.value = res.data;
