@@ -205,7 +205,7 @@ const pages = ref(0);
 // 当前页码
 const current = ref(1);
 // 每页显示的文章数
-const size = ref(1);
+const size = ref(5);
 
 // 获取指定页的文章数据
 function getArticles(currentNo) {

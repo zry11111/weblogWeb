@@ -8,7 +8,6 @@
       <!-- 左边栏，占用 3 列 -->
       <div class="col-span-4 md:col-span-3 mb-3">
         <!-- 归档列表 -->
-        <!-- 归档列表 -->
         <div
           v-for="(archive, index) in archives"
           :key="index"
@@ -160,7 +159,7 @@ const archives = ref([]);
 // 当前页码
 const current = ref(1);
 // 每页显示的文章数
-const size = ref(1);
+const size = ref(5);
 // 总文章数
 const total = ref(0);
 // 总共多少页
