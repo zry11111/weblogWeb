@@ -1,19 +1,27 @@
 <template>
-    <!-- duration-200设置导览行的过渡时间 -->
+  <!-- duration-200设置导览行的过渡时间 -->
   <div
     class="fixed overflow-y-auto bg-slate-800 h-screen text-white menu-container transition-all"
     :style="{ width: menuStore.menuWidth }"
   >
     <!-- 顶部 Logo, 指定高度为 64px, 和右边的 Header 头保持一样高 -->
-    <div @click="$router.push('/')" class="flex items-center justify-center h-[64px]">
-        <!-- 后面再改这里的图片 -->
+    <div
+      @click="$router.push('/')"
+      class="flex items-center justify-center h-[64px]"
+    >
+      <!-- 后面再改这里的图片 -->
       <img
         v-if="menuStore.menuWidth == '250px'"
-        src="@/assets/mikufans.jpg"
-        class="h-[60px]"
+        src="http://47.236.36.111:9000/weblog/f5be858edbe740168ae7f9e747fc0afb.jpg"
+        class="w-full h-full object-cover"
         alt="miku"
       />
-      <img v-else src="@/assets/mikufans.jpg" class="h-[40px]" alt="miku" />
+      <img
+        v-else
+        src="http://47.236.36.111:9000/weblog/f5be858edbe740168ae7f9e747fc0afb.jpg"
+        class="w-full h-full object-cover"
+        alt="miku"
+      />
     </div>
 
     <!-- 下方菜单 -->

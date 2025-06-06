@@ -1,8 +1,16 @@
 <script setup>
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 const locale = zhCn
+// import { loadOml2d } from 'oh-my-live2d';
+// loadOml2d({
+//   models: [
+//     {
+//       path: 'https://model.oml2d.com/Senko_Normals/senko.model3.json',
+//       position: [-10, 20]
+//     }
+//   ]
+// });
 </script>
-
 <template>
   <!-- 将全局的样式语言设置为中文 -->
   <el-config-provider :locale="locale">
